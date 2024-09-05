@@ -17,7 +17,7 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '17' 
         distribution: 'temurin'
 
     - name: make application.yml
@@ -36,17 +36,17 @@ jobs:
       run: |
         docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PW }}
         docker build -t app .
-        docker tag app ${{ secrets.DOCKER_ID }}/earsToWorld-backend:latest
-        docker push ${{ secrets.DOCKER_ID }}/earsToWorld-backend:latest
-    
+        docker tag app ${{ secrets.DOCKER_ID }}/earstoworld:latest
+        docker push ${{ secrets.DOCKER_ID }}/earstoworld:latest
+
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
-          cd deploy
+          cd ~/deploy
           docker compose pull
           docker compose up -d backend
           docker image prune -a -f
@@ -56,6 +56,6 @@ jobs:
       if: always()
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        title: 배포 상태
+        title: 백엔드 배포 상태
         description: ${{ job.status == 'success' && '배포성공' || '배포실패' }}
         color: ${{ job.status == 'success' && '0x00ff00' || '0xff0000' }} 
