@@ -36,8 +36,8 @@ jobs:
       run: |
         docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PW }}
         docker build -t app .
-        docker tag app ${{ secrets.DOCKER_ID }}/earstoworld-backend:latest
-        docker push ${{ secrets.DOCKER_ID }}/earstoworld-backend:latest
+        docker tag app ${{ secrets.DOCKER_ID }}/earstoworld:latest
+        docker push ${{ secrets.DOCKER_ID }}/earstoworld:latest
     
     - name: Deploy
       uses: appleboy/ssh-action@master
@@ -56,6 +56,6 @@ jobs:
       if: always()
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        title: 배포 상태
+        title: 백엔드 배포 상태
         description: ${{ job.status == 'success' && '배포성공' || '배포실패' }}
         color: ${{ job.status == 'success' && '0x00ff00' || '0xff0000' }} 
