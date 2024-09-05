@@ -50,17 +50,17 @@ jobs:
           docker pull ${{ secrets.DOCKER_ID }}/backend:latest
           docker compose up -d backend
           docker image prune -a -f
-
-    - name: Notify Discord on Success
-      if: success()
+          
+    - name: Set Notification Message
+      id: set_message
       run: |
-        curl -H "Content-Type: application/json" -X POST -d \
-        '{"content": "✅ Build succeeded for '${{ github.repository }}' on branch '${{ github.ref_name }}'!"}' \
-        ${{ secrets.DISCORD_WEBHOOK_URL }}
-
-    - name: Notify Discord on Failure
-      if: failure()
+        if [ ${{ success() }} ]; then
+          echo "content=✅ Build succeeded for '${{ github.repository }}' on branch '${{ github.ref_name }}'!" >> $GITHUB_ENV
+        else
+          echo "content=❌ Build failed for '${{ github.repository }}' on branch '${{ github.ref_name }}'!" >> $GITHUB_ENV
+        
+    - name: Notify Discord
       run: |
-        curl -H "Content-Type: application/json" -X POST -d \
-        '{"content": "❌ Build failed for '${{ github.repository }}' on branch '${{ github.ref_name }}'!"}' \
+        curl -X POST -H 'Content-Type: application/json' \
+        -d "{\"content\":\"${{ env.content }}\"}" \
         ${{ secrets.DISCORD_WEBHOOK_URL }}
