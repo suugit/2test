@@ -43,7 +43,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
+        username: ${{ secrets.EC2_HOST }}
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
           cd deploy
@@ -51,11 +51,11 @@ jobs:
           docker compose up -d backend
           docker image prune -a -f
 
-    # - name: Discord Alert
-    #   uses: sarisia/actions-status-discord@v1
-    #   if: always()
-    #   with:
-    #     webhook: ${{ secrets.DISCORD_WEBHOOK }}
-    #     title: 배포 상태
-    #     description: ${{ job.status == 'success' && '배포성공' || '배포실패' }}
-    #     color: ${{ job.status == 'success' && '0x00ff00' || '0xff0000' }} 
+    - name: Notify Discord
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        title: 배포 상태
+        description: ${{ job.status == 'success' && '배포성공' || '배포실패' }}
+        color: ${{ job.status == 'success' && '0x00ff00' || '0xff0000' }} 
