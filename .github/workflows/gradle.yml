@@ -46,7 +46,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
-          cd deploy
+          cd ~/deploy
           docker compose pull
           docker compose up -d backend
           docker image prune -a -f
